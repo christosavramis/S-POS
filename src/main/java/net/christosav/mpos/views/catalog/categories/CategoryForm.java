@@ -1,6 +1,5 @@
 package net.christosav.mpos.views.catalog.categories;
 
-import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
@@ -13,10 +12,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-import lombok.Setter;
 import net.christosav.mpos.data.Category;
-
-import java.util.function.Consumer;
 
 public class CategoryForm extends VerticalLayout {
     private final Binder<Category> binder = new Binder<>(Category.class);
@@ -35,37 +31,39 @@ public class CategoryForm extends VerticalLayout {
 
     private final Button cancelButton = new Button("cancel", event -> {
         if (binder.hasChanges()) {
-            createConfirmationDialog(cancelEvent -> {}, saveEvent -> reset());
+            createConfirmationDialog(cancelEvent -> {}, saveEvent -> clear());
         } else {
-            reset();
+            clear();
         }
     });
     {
         cancelButton.setWidth("min-content");
     }
-    private @Setter Consumer<Category> saveListener;
 
     private final Button saveButton = new Button("save");
     {
         saveButton.setWidth("min-content");
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.addClickListener(event -> {
-            saveListener.accept(binder.getBean());
-            reset();
+            fireEvent(new CrudEvent.FormSave(this, binder.getBean()));
+            clear();
         });
     }
 
-    private @Setter Consumer<Category> deleteListener;
     private final Button deleteButton = new Button("delete");
     {
         deleteButton.setWidth("min-content");
         deleteButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         deleteButton.addClickListener(event -> {
-            deleteListener.accept(binder.getBean());
-            reset();
+            if (binder.hasChanges()) {
+                createConfirmationDialog(cancelEvent -> {}, saveEvent -> {
+                    fireEvent(new CrudEvent.FormDelete(this, binder.getBean()));
+                    clear();
+                });
+            }
         });
     }
-    public void reset() {
+    public void clear() {
         this.setVisible(false);
         binder.setBean(new Category());
     }
@@ -104,11 +102,6 @@ public class CategoryForm extends VerticalLayout {
     public void setObject(Category category) {
         this.setVisible(true);
         binder.setBean(category);
-    }
-
-    public void setCancelListener(ComponentEventListener<ClickEvent<Button>> listener) {
-        cancelButton.addClickListener(listener);
-        fireEvent(new CrudEvent.FormCancel(this, binder.getBean()));
     }
 
     private void createConfirmationDialog(ComponentEventListener<ConfirmDialog.CancelEvent> cancelListener,

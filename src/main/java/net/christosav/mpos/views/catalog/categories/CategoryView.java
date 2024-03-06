@@ -12,6 +12,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import jakarta.annotation.security.RolesAllowed;
+import lombok.extern.slf4j.Slf4j;
 import net.christosav.mpos.data.Category;
 import net.christosav.mpos.services.CategoryCrudService;
 import net.christosav.mpos.views.MainLayout;
@@ -20,6 +21,7 @@ import net.christosav.mpos.views.MainLayout;
 @Route(value = "catalog/categories", layout = MainLayout.class)
 @RolesAllowed("USER")
 @Uses(Icon.class)
+@Slf4j
 public class CategoryView extends Composite<VerticalLayout> {
     private final CategoryForm form = new CategoryForm();
     private final CategoryGrid categoryGrid = new CategoryGrid();
@@ -36,18 +38,14 @@ public class CategoryView extends Composite<VerticalLayout> {
         form.addListener(CrudEvent.FormSave.class, event -> {
             categoryService.save((Category) event.getPayload());
             categoryGrid.updateGrid(categoryService::list);
-            System.out.println("Save button clicked");
         });
 
         form.addListener(CrudEvent.FormDelete.class, event -> {
             categoryService.delete((Category) event.getPayload());
             categoryGrid.updateGrid(categoryService::list);
-            System.out.println("Delete button clicked");
         });
 
-        form.addListener(CrudEvent.FormCancel.class, event -> {
-            System.out.println("Cancel button clicked");
-        });
+        form.addListener(CrudEvent.FormCancel.class, event -> System.out.println("Cancel button clicked"));
 
 
         categoryGrid.addListener(CrudEvent.GridRowSelected.class, event -> {
