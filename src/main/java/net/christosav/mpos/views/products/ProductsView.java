@@ -1,6 +1,8 @@
 package net.christosav.mpos.views.products;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -38,86 +40,108 @@ import org.springframework.data.domain.PageRequest;
 @RolesAllowed("USER")
 @Uses(Icon.class)
 public class ProductsView extends Composite<VerticalLayout> {
+    private final SamplePersonService samplePersonService;
+    public ProductsView(SamplePersonService samplePersonService) {
+        this.samplePersonService = samplePersonService;
+        HorizontalLayout mainLayout = new HorizontalLayout();
 
-    public ProductsView() {
-        HorizontalLayout layoutRow = new HorizontalLayout();
-        VerticalLayout layoutColumn2 = new VerticalLayout();
-        HorizontalLayout layoutRow2 = new HorizontalLayout();
+
         MenuBar menuBar = new MenuBar();
         Grid basicGrid = new Grid(SamplePerson.class);
-        VerticalLayout layoutColumn3 = new VerticalLayout();
-        TextField textField = new TextField();
-        ComboBox comboBox = new ComboBox();
-        TextField textField2 = new TextField();
-        PriceField price = new PriceField();
-        Checkbox checkbox = new Checkbox();
-        TabSheet tabSheet = new TabSheet();
-        HorizontalLayout layoutRow3 = new HorizontalLayout();
-        Button buttonSecondary = new Button();
-        Button buttonPrimary = new Button();
-        getContent().setWidth("100%");
+
         getContent().getStyle().set("flex-grow", "1");
-        layoutRow.addClassName(Gap.MEDIUM);
-        layoutRow.setWidth("100%");
-        layoutRow.getStyle().set("flex-grow", "1");
-        layoutColumn2.setHeightFull();
-        layoutRow.setFlexGrow(1.0, layoutColumn2);
-        layoutColumn2.setWidth("100%");
-        layoutColumn2.getStyle().set("flex-grow", "1");
-        layoutRow2.setWidthFull();
-        layoutColumn2.setFlexGrow(1.0, layoutRow2);
-        layoutRow2.addClassName(Gap.MEDIUM);
-        layoutRow2.setWidth("100%");
-        layoutRow2.getStyle().set("flex-grow", "1");
-        layoutRow2.setAlignSelf(FlexComponent.Alignment.CENTER, menuBar);
+        getContent().setSizeFull();
+
+        VerticalLayout gridLeftLayout = new VerticalLayout();
+        gridLeftLayout.setSizeFull();
+        gridLeftLayout.getStyle().set("flex-grow", "1");
+
+        mainLayout.addClassName(Gap.MEDIUM);
+        mainLayout.setWidth("100%");
+        mainLayout.getStyle().set("flex-grow", "1");
+        mainLayout.setFlexGrow(1.0, gridLeftLayout);
+
+        HorizontalLayout gridActionBarLayout = new HorizontalLayout();
+        gridActionBarLayout.setWidthFull();
+        gridActionBarLayout.addClassName(Gap.MEDIUM);
+        gridActionBarLayout.setAlignSelf(FlexComponent.Alignment.CENTER, menuBar);
+        gridActionBarLayout.add(menuBar);
+
         menuBar.setWidth("min-content");
         setMenuBarSampleData(menuBar);
-        basicGrid.setWidth("100%");
-        basicGrid.setHeight("100%");
         setGridSampleData(basicGrid);
-        layoutColumn3.getStyle().set("flex-grow", "1");
+
+
+        getContent().add(mainLayout);
+        mainLayout.add(gridLeftLayout);
+        gridLeftLayout.add(gridActionBarLayout);
+
+        gridLeftLayout.add(basicGrid);
+
+
+        mainLayout.add(setupForm());
+    }
+
+
+    private VerticalLayout setupForm() {
+        VerticalLayout form = new VerticalLayout();
+        form.setWidth("inherit");
+
+        TextField textField = new TextField();
         textField.setLabel("name");
         textField.setWidth("100%");
+        form.add(textField);
+
+        ComboBox comboBox = new ComboBox();
         comboBox.setLabel("category");
         comboBox.setWidth("100%");
         setComboBoxSampleData(comboBox);
+        form.add(comboBox);
+
+        TextField textField2 = new TextField();
         textField2.setLabel("Text field");
         textField2.setWidth("100%");
+        form.add(textField2);
+
+        PriceField price = new PriceField();
         price.setLabel("Price");
         price.setWidth("100%");
+        form.add(price);
+
+        Checkbox checkbox = new Checkbox();
         checkbox.setLabel("Checkbox");
         checkbox.setWidth("100%");
+        form.add(checkbox);
+
+        TabSheet tabSheet = new TabSheet();
         tabSheet.setWidth("100%");
         tabSheet.getStyle().set("flex-grow", "1");
         setTabSheetSampleData(tabSheet);
-        layoutRow3.setWidthFull();
-        layoutColumn3.setFlexGrow(1.0, layoutRow3);
-        layoutRow3.addClassName(Gap.LARGE);
-        layoutRow3.addClassName(Padding.SMALL);
-        layoutRow3.setWidth("100%");
-        layoutRow3.setHeight("min-content");
-        layoutRow3.setAlignItems(Alignment.CENTER);
-        layoutRow3.setJustifyContentMode(JustifyContentMode.CENTER);
-        buttonSecondary.setText("cancel");
-        buttonSecondary.setWidth("min-content");
-        buttonPrimary.setText("done");
-        buttonPrimary.setWidth("min-content");
-        buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        getContent().add(layoutRow);
-        layoutRow.add(layoutColumn2);
-        layoutColumn2.add(layoutRow2);
-        layoutRow2.add(menuBar);
-        layoutColumn2.add(basicGrid);
-        layoutRow.add(layoutColumn3);
-        layoutColumn3.add(textField);
-        layoutColumn3.add(comboBox);
-        layoutColumn3.add(textField2);
-        layoutColumn3.add(price);
-        layoutColumn3.add(checkbox);
-        layoutColumn3.add(tabSheet);
-        layoutColumn3.add(layoutRow3);
-        layoutRow3.add(buttonSecondary);
-        layoutRow3.add(buttonPrimary);
+        form.add(tabSheet);
+
+        HorizontalLayout buttonLayout = new HorizontalLayout();
+        buttonLayout.setWidthFull();
+        buttonLayout.addClassName(Gap.LARGE);
+        buttonLayout.addClassName(Padding.SMALL);
+        buttonLayout.setWidth("100%");
+        buttonLayout.setHeight("min-content");
+        buttonLayout.setAlignItems(Alignment.CENTER);
+        buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER);
+
+        Button cancelButton = new Button();
+        cancelButton.setText("cancel");
+        cancelButton.setWidth("min-content");
+        buttonLayout.add(cancelButton);
+
+        Button saveButton = new Button();
+        saveButton.setText("done");
+        saveButton.setWidth("min-content");
+        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        buttonLayout.add(saveButton);
+
+        form.add(buttonLayout);
+
+        return form;
     }
 
     private void setMenuBarSampleData(MenuBar menuBar) {
@@ -131,10 +155,9 @@ public class ProductsView extends Composite<VerticalLayout> {
         grid.setItems(query -> samplePersonService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
-    }
 
-    @Autowired()
-    private SamplePersonService samplePersonService;
+        System.out.println(samplePersonService.list(PageRequest.of(0, 10)).getContent());
+    }
 
     record SampleItem(String value, String label, Boolean disabled) {
     }

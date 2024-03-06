@@ -26,6 +26,7 @@ import net.christosav.mpos.security.AuthenticatedUser;
 import net.christosav.mpos.views.about.AboutView;
 import net.christosav.mpos.views.cart.CartView;
 import net.christosav.mpos.views.catalog.CatalogView;
+import net.christosav.mpos.views.catalog.categories.CategoryView;
 import net.christosav.mpos.views.checkoutform.CheckoutFormView;
 import net.christosav.mpos.views.gridwithfilters.GridwithFiltersView;
 import net.christosav.mpos.views.helloworld.HelloWorldView;
@@ -111,7 +112,10 @@ public class MainLayout extends AppLayout {
         }
         if (accessChecker.hasAccess(MyView2View.class)) {
             nav.addItem(new SideNavItem("My View2", MyView2View.class, LineAwesomeIcon.PENCIL_RULER_SOLID.create()));
+        }
 
+        if (accessChecker.hasAccess(CategoryView.class)) {
+            nav.addItem(new SideNavItem("Categories", CategoryView.class, LineAwesomeIcon.CALENDAR_TIMES.create()));
         }
 
         return nav;

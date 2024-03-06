@@ -32,10 +32,15 @@ import org.springframework.data.domain.PageRequest;
 @Uses(Icon.class)
 public class CartView extends Composite<VerticalLayout> {
 
-    public CartView() {
+    private final SamplePersonService samplePersonService;
+
+    public CartView(SamplePersonService samplePersonService) {
+        this.samplePersonService = samplePersonService;
         HorizontalLayout layoutRow = new HorizontalLayout();
         MenuBar menuBar = new MenuBar();
         HorizontalLayout layoutRow2 = new HorizontalLayout();
+        //<theme-editor-local-classname>
+        layoutRow2.addClassName("cart-view-horizontal-layout-1");
         VerticalLayout layoutColumn5 = new VerticalLayout();
         VerticalLayout layoutColumn2 = new VerticalLayout();
         H6 h6 = new H6();
@@ -118,8 +123,8 @@ public class CartView extends Composite<VerticalLayout> {
         layoutRow2.add(layoutColumn5);
         layoutRow2.add(layoutColumn2);
         layoutColumn2.add(h6);
-        layoutColumn2.add(layoutColumn3);
         layoutColumn3.add(minimalistGrid);
+        layoutColumn2.add(layoutColumn3);
         layoutColumn2.add(layoutColumn4);
         layoutColumn4.add(layoutRow3);
         layoutRow3.add(h5);
@@ -140,10 +145,8 @@ public class CartView extends Composite<VerticalLayout> {
 
     private void setGridSampleData(Grid grid) {
         grid.setItems(query -> samplePersonService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
+                        PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
     }
 
-    @Autowired()
-    private SamplePersonService samplePersonService;
 }

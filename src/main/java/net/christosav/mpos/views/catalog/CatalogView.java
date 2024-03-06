@@ -10,7 +10,7 @@ import jakarta.annotation.security.RolesAllowed;
 import net.christosav.mpos.views.MainLayout;
 
 @PageTitle("Catalog")
-@Route(value = "catalog/categories", layout = MainLayout.class)
+@Route(value = "catalog/categories2", layout = MainLayout.class)
 @RolesAllowed("USER")
 @Uses(Icon.class)
 public class CatalogView extends Composite<VerticalLayout> {
