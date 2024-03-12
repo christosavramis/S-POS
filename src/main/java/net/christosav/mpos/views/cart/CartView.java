@@ -1,5 +1,6 @@
 package net.christosav.mpos.views.cart;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -20,11 +21,14 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
+import net.christosav.mpos.data.OrderableItem;
 import net.christosav.mpos.data.SamplePerson;
+import net.christosav.mpos.services.OrderableItemCrudService;
 import net.christosav.mpos.services.SamplePersonService;
 import net.christosav.mpos.views.MainLayout;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+
+import static net.christosav.mpos.views.components.AbstractGrid.createPermissionIcon;
 
 @PageTitle("Cart")
 @Route(value = "ordering/cart", layout = MainLayout.class)
@@ -32,121 +36,36 @@ import org.springframework.data.domain.PageRequest;
 @Uses(Icon.class)
 public class CartView extends Composite<VerticalLayout> {
 
-    private final SamplePersonService samplePersonService;
+    public CartView(OrderableItemCrudService orderableItemCrudService) {
+        getContent().add(new H5("Cart"));
+        getContent().add(new H6("This is a simple example of a cart view."));
 
-    public CartView(SamplePersonService samplePersonService) {
-        this.samplePersonService = samplePersonService;
-        HorizontalLayout layoutRow = new HorizontalLayout();
-        MenuBar menuBar = new MenuBar();
-        HorizontalLayout layoutRow2 = new HorizontalLayout();
-        //<theme-editor-local-classname>
-        layoutRow2.addClassName("cart-view-horizontal-layout-1");
-        VerticalLayout layoutColumn5 = new VerticalLayout();
-        VerticalLayout layoutColumn2 = new VerticalLayout();
-        H6 h6 = new H6();
-        VerticalLayout layoutColumn3 = new VerticalLayout();
-        Grid minimalistGrid = new Grid(SamplePerson.class);
-        VerticalLayout layoutColumn4 = new VerticalLayout();
-        HorizontalLayout layoutRow3 = new HorizontalLayout();
-        H5 h5 = new H5();
-        H5 h52 = new H5();
-        HorizontalLayout layoutRow4 = new HorizontalLayout();
-        H5 h53 = new H5();
-        H5 h54 = new H5();
-        HorizontalLayout layoutRow5 = new HorizontalLayout();
-        Button buttonPrimary = new Button();
-        getContent().setWidth("100%");
-        getContent().getStyle().set("flex-grow", "1");
-        layoutRow.addClassName(Gap.MEDIUM);
-        layoutRow.setWidth("100%");
-        layoutRow.setHeight("min-content");
-        menuBar.setWidth("min-content");
-        setMenuBarSampleData(menuBar);
-        layoutRow2.addClassName(Gap.MEDIUM);
-        layoutRow2.setWidth("100%");
-        layoutRow2.getStyle().set("flex-grow", "1");
-        layoutColumn5.getStyle().set("flex-grow", "1");
-        layoutColumn5.setHeight("100%");
-        layoutColumn2.setMinWidth("370px");
-        layoutColumn2.getStyle().set("flex-grow", "1");
-        h6.setText("cart");
-        h6.setWidth("max-content");
-        layoutColumn3.setWidthFull();
-        layoutColumn2.setFlexGrow(1.0, layoutColumn3);
-        layoutColumn3.setWidth("100%");
-        layoutColumn3.getStyle().set("flex-grow", "1");
-        minimalistGrid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_NO_BORDER,
-                GridVariant.LUMO_NO_ROW_BORDERS);
-        minimalistGrid.setWidth("100%");
-        minimalistGrid.setHeight("100%");
-        setGridSampleData(minimalistGrid);
-        layoutColumn4.setWidthFull();
-        layoutColumn2.setFlexGrow(1.0, layoutColumn4);
-        layoutColumn4.setWidth("100%");
-        layoutColumn4.setHeight("min-content");
-        layoutRow3.setWidthFull();
-        layoutColumn4.setFlexGrow(1.0, layoutRow3);
-        layoutRow3.addClassName(Gap.MEDIUM);
-        layoutRow3.setWidth("100%");
-        layoutRow3.setHeight("min-content");
-        layoutRow3.setAlignItems(Alignment.CENTER);
-        layoutRow3.setJustifyContentMode(JustifyContentMode.END);
-        h5.setText("tax");
-        h5.setWidth("max-content");
-        h52.setText("Heading");
-        h52.setWidth("max-content");
-        layoutRow4.setWidthFull();
-        layoutColumn4.setFlexGrow(1.0, layoutRow4);
-        layoutRow4.addClassName(Gap.MEDIUM);
-        layoutRow4.setWidth("100%");
-        layoutRow4.setHeight("min-content");
-        layoutRow4.setAlignItems(Alignment.CENTER);
-        layoutRow4.setJustifyContentMode(JustifyContentMode.END);
-        h53.setText("total");
-        h53.setWidth("max-content");
-        h54.setText("Heading");
-        h54.setWidth("max-content");
-        layoutRow5.setWidthFull();
-        layoutColumn2.setFlexGrow(1.0, layoutRow5);
-        layoutRow5.addClassName(Gap.MEDIUM);
-        layoutRow5.setWidth("100%");
-        layoutRow5.setHeight("min-content");
-        layoutRow5.setAlignItems(Alignment.CENTER);
-        layoutRow5.setJustifyContentMode(JustifyContentMode.CENTER);
-        buttonPrimary.setText("checkout");
-        layoutRow5.setAlignSelf(FlexComponent.Alignment.CENTER, buttonPrimary);
-        buttonPrimary.setWidth("min-content");
-        buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        getContent().add(layoutRow);
-        layoutRow.add(menuBar);
-        getContent().add(layoutRow2);
-        layoutRow2.add(layoutColumn5);
-        layoutRow2.add(layoutColumn2);
-        layoutColumn2.add(h6);
-        layoutColumn3.add(minimalistGrid);
-        layoutColumn2.add(layoutColumn3);
-        layoutColumn2.add(layoutColumn4);
-        layoutColumn4.add(layoutRow3);
-        layoutRow3.add(h5);
-        layoutRow3.add(h52);
-        layoutColumn4.add(layoutRow4);
-        layoutRow4.add(h53);
-        layoutRow4.add(h54);
-        layoutColumn2.add(layoutRow5);
-        layoutRow5.add(buttonPrimary);
-    }
+        Grid<OrderableItem> grid = new Grid<>(OrderableItem.class);
+        grid.addColumn(OrderableItem::getId).setHeader("Id");
+        grid.addColumn(OrderableItem::getName).setHeader("Name");
+        grid.addColumn(OrderableItem::getDescription).setHeader("Description");
+        grid.addColumn(OrderableItem::getPrice).setHeader("Price");
+        grid.addComponentColumn(orderableItem -> createPermissionIcon(orderableItem.isActive())).setHeader("Active");
+        grid.setItems(orderableItemCrudService.list());
+        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_ROW_STRIPES);
+        getContent().add(grid);
 
-    private void setMenuBarSampleData(MenuBar menuBar) {
-        menuBar.addItem("View");
-        menuBar.addItem("Edit");
-        menuBar.addItem("Share");
-        menuBar.addItem("Move");
-    }
+        HorizontalLayout buttons = new HorizontalLayout();
+        buttons.setJustifyContentMode(JustifyContentMode.BETWEEN);
+        buttons.setAlignItems(Alignment.BASELINE);
+        getContent().add(buttons);
 
-    private void setGridSampleData(Grid grid) {
-        grid.setItems(query -> samplePersonService.list(
-                        PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
-                .stream());
+        Button checkout = new Button("Checkout");
+        checkout.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        buttons.add(checkout);
+
+        Button cancel = new Button("Cancel");
+        cancel.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        buttons.add(cancel);
+
+        getContent().setAlignItems(Alignment.CENTER);
+        getContent().setJustifyContentMode(JustifyContentMode.CENTER);
+
     }
 
 }

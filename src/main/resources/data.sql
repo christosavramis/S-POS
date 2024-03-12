@@ -106,16 +106,71 @@ insert into user_roles (user_id, roles) values ('2', 'ADMIN');
 
 
 insert into category(version, id, name, active) values (1, 100, 'Pizza', true);
-insert into category(version, id, name, active) values (1, 101, 'Pasta', true);
+insert into category(version, id, name, active) values (1, 101, 'Drinks', true);
+insert into category(version, id, name, active) values (1, 104, 'Pasta', true);
 insert into category(version, id, name, active) values (1, 102, 'Salad', true);
 insert into category(version, id, name, active) values (1, 103, 'Dessert', true);
-insert into category(version, id, name, active) values (1, 104, 'Drinks', true);
 insert into category(version, id, name, active) values (1, 105, 'Appetizer', true);
 
-insert into orderable_item(version, id, name, description, price, category_id) values (1, 1, 'Margherita', 'Tomato, mozzarella, basil', 10000, 104);
-insert into orderable_item(version, id, name, description, price, category_id) values (1, 2, 'Marinara', 'Tomato, garlic, oregano', 10000, 104);
-insert into orderable_item(version, id, name, description, price, category_id) values (1, 3, 'Carbonara', 'Egg, cheese, pancetta, black pepper', 10000, 104);
-insert into orderable_item(version, id, name, description, price, category_id) values (1, 4, 'Frutti di Mare', 'Seafood', 10000, 104);
-insert into orderable_item(version, id, name, description, price, category_id) values (1, 5, 'Quattro Stagioni', 'Tomato, mozzarella, mushrooms, ham, artichokes, olives, oregano', 10000, 104);
-insert into orderable_item(version, id, name, description, price, category_id) values (1, 6, 'Quattro Formaggi', 'Tomato, mozzarella, gorgonzola, parmesan, artichokes, olives, oregano', 10000, 104)
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 1, 'Margherita', 'Tomato, mozzarella, basil', 10000, 104, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 2, 'Marinara', 'Tomato, garlic, oregano', 10000, 104, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 3, 'Carbonara', 'Egg, cheese, pancetta, black pepper', 10000, 104, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 4, 'Frutti di Mare', 'Seafood', 10000, 104, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 5, 'Quattro Stagioni', 'Tomato, mozzarella, mushrooms, ham, artichokes, olives, oregano', 10000, 104, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 6, 'Quattro Formaggi', 'Tomato, mozzarella, gorgonzola, parmesan, artichokes, olives, oregano', 10000, 104, true);
+
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 7, 'Napolitana', 'Tomato, mozzarella, anchovies, olives, capers', 11000, 104, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 8, 'Prosciutto e Funghi', 'Tomato, mozzarella, ham, mushrooms', 12000, 104, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 9, 'Diavola', 'Tomato, mozzarella, spicy salami', 11000, 104, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 10, 'Bufalina', 'Tomato, buffalo mozzarella, basil', 13000, 104, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 11, 'Capricciosa', 'Tomato, mozzarella, ham, mushrooms, artichokes, olives', 12000, 104, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 12, 'Siciliana', 'Tomato, mozzarella, anchovies, olives, capers', 12500, 104, true);
+
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 13, 'Primavera', 'Tomato, mozzarella, assorted vegetables', 11000, 104, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 14, 'Rustica', 'Tomato, mozzarella, sausage, bell peppers, onions', 12000, 104, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 15, 'Pesto', 'Pesto sauce, mozzarella, cherry tomatoes, pine nuts', 11500, 104, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 16, 'Margherita DOP', 'San Marzano tomatoes, buffalo mozzarella, basil', 13000, 104, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 17, 'Bianca', 'Mozzarella, ricotta cheese, garlic, arugula', 12500, 104, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 18, 'Calzone', 'Folded pizza stuffed with mozzarella, ham, mushrooms', 13500, 104, true);
+
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 19, 'Tartufo', 'Mozzarella, truffle cream, mushrooms, parmesan', 14000, 104, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 20, 'Caprese', 'Tomato, buffalo mozzarella, basil, balsamic glaze', 12500, 104, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 21, 'Vegetariana', 'Tomato, mozzarella, assorted vegetables, olives', 11500, 104, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 22, 'Hawaiian', 'Tomato, mozzarella, ham, pineapple', 12000, 104, true);
+
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 23, 'Vegetarian Pizza', 'Tomato, mozzarella, assorted vegetables', 11000, 100, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 24, 'Meat Lover''s Pizza', 'Tomato, mozzarella, pepperoni, sausage, bacon', 12000, 100, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 25, 'BBQ Chicken Pizza', 'BBQ sauce, mozzarella, grilled chicken, red onions', 12500, 100, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 26, 'Buffalo Chicken Pizza', 'Buffalo sauce, mozzarella, grilled chicken, blue cheese', 13000, 100, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 27, 'Mushroom Truffle Pizza', 'Truffle oil, mozzarella, mushrooms, arugula', 14000, 100, true);
+
+
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 28, 'Soda', 'Coca-Cola, Pepsi, Sprite', 2000, 101, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 29, 'Iced Tea', 'Regular, peach flavored', 2500, 101, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 30, 'Lemonade', 'Freshly squeezed lemon juice, sugar, water', 3000, 101, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 31, 'Fruit Juice', 'Orange, apple, pineapple', 3500, 101, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 32, 'Beer', 'Domestic, imported', 5000, 101, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 33, 'Wine', 'Red, white, rose', 10000, 101, true);
+
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 38, 'Caesar Salad', 'Romaine lettuce, croutons, parmesan cheese, Caesar dressing', 9000, 102, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 39, 'Greek Salad', 'Lettuce, tomatoes, cucumbers, olives, feta cheese', 9500, 102, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 40, 'Caprese Salad', 'Tomatoes, buffalo mozzarella, basil, balsamic glaze', 10000, 102, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 41, 'Cobb Salad', 'Lettuce, avocado, bacon, chicken, blue cheese, tomatoes', 11000, 102, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 42, 'Nicoise Salad', 'Tuna, boiled eggs, potatoes, green beans, olives', 10500, 102, true);
+
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 43, 'Tiramisu', 'Coffee-flavored Italian dessert', 8000, 103, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 44, 'Cheesecake', 'Creamy cheesecake with a graham cracker crust', 8500, 103, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 45, 'Chocolate Lava Cake', 'Warm chocolate cake with a gooey chocolate center', 9000, 103, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 46, 'Creme Brulee', 'Creamy custard with a caramelized sugar topping', 9500, 103, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 47, 'Fruit Tart', 'Shortbread crust filled with pastry cream and fresh fruit', 10000, 103, true);
+
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 48, 'Tiramisu', 'Coffee-flavored Italian dessert', 8000, 103, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 49, 'Cheesecake', 'Creamy cheesecake with a graham cracker crust', 8500, 103, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 50, 'Chocolate Lava Cake', 'Warm chocolate cake with a gooey chocolate center', 9000, 103, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 51, 'Creme Brulee', 'Creamy custard with a caramelized sugar topping', 9500, 103, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 52, 'Fruit Tart', 'Shortbread crust filled with pastry cream and fresh fruit', 10000, 103, true);
+
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 53, 'Bruschetta', 'Toasted bread topped with tomatoes, garlic, and basil', 7000, 105, true);
+insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 54, 'Garlic Bread', 'Toasted bread with garlic butter', 6500, 105, true);
+
 

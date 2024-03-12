@@ -4,6 +4,8 @@ import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import lombok.extern.slf4j.Slf4j;
@@ -45,4 +47,28 @@ public abstract class AbstractGrid<T> extends Div {
     public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType, ComponentEventListener<T> listener) {
         return getEventBus().addListener(eventType, listener);
     }
+
+
+    public static Icon createPermissionIcon(boolean hasPermission) {
+        Icon icon;
+        if (hasPermission) {
+            icon = createIcon(VaadinIcon.CHECK, "Yes");
+            icon.getElement().getThemeList().add("badge success");
+        } else {
+            icon = createIcon(VaadinIcon.CLOSE_SMALL, "No");
+            icon.getElement().getThemeList().add("badge error");
+        }
+        return icon;
+    }
+
+    private static Icon createIcon(VaadinIcon vaadinIcon, String label) {
+        Icon icon = vaadinIcon.create();
+        icon.getStyle().set("padding", "var(--lumo-space-xs");
+        // Accessible label
+        icon.getElement().setAttribute("aria-label", label);
+        // Tooltip
+        icon.getElement().setAttribute("title", label);
+        return icon;
+    }
+
 }

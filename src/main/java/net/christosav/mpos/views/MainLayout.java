@@ -19,19 +19,23 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+
 import java.io.ByteArrayInputStream;
 import java.util.Optional;
+
 import net.christosav.mpos.data.User;
 import net.christosav.mpos.security.AuthenticatedUser;
 import net.christosav.mpos.views.about.AboutView;
 import net.christosav.mpos.views.cart.CartView;
 import net.christosav.mpos.views.catalog.CatalogView;
 import net.christosav.mpos.views.catalog.categories.CategoryView;
+import net.christosav.mpos.views.catalog.orderableitems.OrderableItemView;
 import net.christosav.mpos.views.checkoutform.CheckoutFormView;
 import net.christosav.mpos.views.gridwithfilters.GridwithFiltersView;
 import net.christosav.mpos.views.helloworld.HelloWorldView;
 import net.christosav.mpos.views.myview.MyViewView;
 import net.christosav.mpos.views.myview2.MyView2View;
+import net.christosav.mpos.views.pos.POSOrderingView;
 import net.christosav.mpos.views.products.ProductsView;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
@@ -77,6 +81,22 @@ public class MainLayout extends AppLayout {
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
 
+        if (accessChecker.hasAccess(CategoryView.class)) {
+            nav.addItem(new SideNavItem("Categories", CategoryView.class, LineAwesomeIcon.CALENDAR_TIMES.create()));
+        }
+
+        if (accessChecker.hasAccess(OrderableItemView.class)) {
+            nav.addItem(new SideNavItem("OrderableItem", OrderableItemView.class, LineAwesomeIcon.CALENDAR_TIMES.create()));
+        }
+
+        if (accessChecker.hasAccess(POSOrderingView.class)) {
+            nav.addItem(new SideNavItem("Cart", POSOrderingView.class, LineAwesomeIcon.SHOPPING_CART_SOLID.create()));
+        }
+
+        if (accessChecker.hasAccess(CartView.class)) {
+            nav.addItem(new SideNavItem("Cart", CartView.class, LineAwesomeIcon.SHOPPING_CART_SOLID.create()));
+        }
+
         if (accessChecker.hasAccess(HelloWorldView.class)) {
             nav.addItem(new SideNavItem("Hello World", HelloWorldView.class, LineAwesomeIcon.GLOBE_SOLID.create()));
 
@@ -106,16 +126,9 @@ public class MainLayout extends AppLayout {
                     LineAwesomeIcon.ADDRESS_BOOK.create()));
 
         }
-        if (accessChecker.hasAccess(CartView.class)) {
-            nav.addItem(new SideNavItem("Cart", CartView.class, LineAwesomeIcon.SHOPPING_CART_SOLID.create()));
 
-        }
         if (accessChecker.hasAccess(MyView2View.class)) {
             nav.addItem(new SideNavItem("My View2", MyView2View.class, LineAwesomeIcon.PENCIL_RULER_SOLID.create()));
-        }
-
-        if (accessChecker.hasAccess(CategoryView.class)) {
-            nav.addItem(new SideNavItem("Categories", CategoryView.class, LineAwesomeIcon.CALENDAR_TIMES.create()));
         }
 
         return nav;

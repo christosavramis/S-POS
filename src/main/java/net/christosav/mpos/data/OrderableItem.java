@@ -19,7 +19,7 @@ public class OrderableItem extends AbstractEntity {
     private String name;
     private String description;
     private double price;
-
+    private boolean active;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
