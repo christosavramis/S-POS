@@ -25,16 +25,4 @@ public class OrderableItem extends AbstractEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof OrderableItem orderableItem)) return false;
-        if (!super.equals(o)) return false;
-        return Double.compare(price, orderableItem.price) == 0 && Objects.equals(name, orderableItem.name) && Objects.equals(description, orderableItem.description) && Objects.equals(category, orderableItem.category);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), name, description, price, category);
-    }
 }

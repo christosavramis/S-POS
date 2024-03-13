@@ -5,13 +5,13 @@ import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import lombok.extern.slf4j.Slf4j;
+import net.christosav.mpos.views.util.DialogUtil;
 
 @Slf4j
 public abstract class AbstractForm<T> extends VerticalLayout {
@@ -46,7 +46,7 @@ public abstract class AbstractForm<T> extends VerticalLayout {
         Button cancelButton = new Button("cancel", event -> {
             log.info("Cancel button clicked");
             if (binder.hasChanges()) {
-                createConfirmationDialog(cancelEvent -> {
+                DialogUtil.createConfirmationDialog(cancelEvent -> {
                 }, saveEvent -> clear());
             } else {
                 clear();
@@ -65,7 +65,7 @@ public abstract class AbstractForm<T> extends VerticalLayout {
         Button deleteButton = new Button("delete", event -> {
             log.info("Delete button clicked");
             if (binder.hasChanges()) {
-                createConfirmationDialog(cancelEvent -> {
+                DialogUtil.createConfirmationDialog(cancelEvent -> {
                 }, saveEvent -> {
                     fireEvent(new CrudEvent.FormDelete(this, binder.getBean()));
                     clear();
@@ -92,25 +92,6 @@ public abstract class AbstractForm<T> extends VerticalLayout {
         this.setVisible(true);
         binder.setBean(category);
     }
-
-    private void createConfirmationDialog(ComponentEventListener<ConfirmDialog.CancelEvent> cancelListener,
-                                          ComponentEventListener<ConfirmDialog.ConfirmEvent> saveListener) {
-        ConfirmDialog dialog = new ConfirmDialog();
-        dialog.setHeader("Unsaved changes");
-        dialog.setText("There are unsaved changes. Do you want to cancel or save them?");
-
-        dialog.setCancelable(true);
-        dialog.addCancelListener(cancelListener);
-
-        dialog.setConfirmText("Save");
-        dialog.addConfirmListener(saveListener);
-
-        Button button = new Button("Open confirm dialog");
-        button.addClickListener(event -> dialog.open());
-
-        dialog.open();
-    }
-
 
     @Override
     public <L extends ComponentEvent<?>> Registration addListener(Class<L> eventType, ComponentEventListener<L> listener) {

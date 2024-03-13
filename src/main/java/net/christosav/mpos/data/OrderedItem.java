@@ -19,16 +19,4 @@ public class OrderedItem extends AbstractEntity {
         return (int) (orderableItem.getPrice() * quantity);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof OrderedItem that)) return false;
-        if (!super.equals(o)) return false;
-        return quantity == that.quantity && Objects.equals(orderableItem, that.orderableItem);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), orderableItem, quantity);
-    }
 }
