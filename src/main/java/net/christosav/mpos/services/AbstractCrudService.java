@@ -22,7 +22,7 @@ public class AbstractCrudService<T, ID> {
 
     public void delete(T entity) { repository.delete(entity); }
 
-    public void save(T entity) {
-        repository.save(entity);
+    public T save(T entity) {
+        return repository.save(entity);
     }
 }

@@ -1,8 +1,6 @@
 package net.christosav.mpos.data;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -10,33 +8,65 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import static java.util.function.Predicate.not;
+
 @Entity(name = "orders")
-@Setter @Getter
 @AllArgsConstructor @NoArgsConstructor
-public class Order extends AbstractEntity {
+@Setter @Getter
+public class Order extends AbstractEntity implements Priceable {
+
     private Date date = new Date();
 
-    @OneToOne
-    private AddressDetails addressDetails;
+    // Pricing
+    private int price;
 
-    @OneToMany
+    private boolean priceValid;
+    public boolean isPriceValid() {
+        return priceValid && getPriceableChildren().stream().anyMatch(not(Priceable::isPriceValid));
+    }
+
+    @OneToMany(cascade = CascadeType.ALL)
     private List<OrderedItem> orderedItems = new ArrayList<>();
 
-    public int getTotal() {
-        return orderedItems.stream().mapToInt(OrderedItem::getTotal).sum();
+    public void orderItem(OrderableItem orderableItem) {
+        OrderedItem orderedItem = new OrderedItem();
+        orderedItem.setName(orderableItem.getName());
+        orderedItem.setOrder(this);
+        orderedItem.setOrderableItem(orderableItem);
+        orderedItems.add(orderedItem);
+        modified();
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Order order)) return false;
-        if (!super.equals(o)) return false;
-        return Objects.equals(date, order.date) && Objects.equals(addressDetails, order.addressDetails) && Objects.equals(orderedItems, order.orderedItems);
+    public int getPrice() {
+        if (!isPriceValid()) {
+            calcPrice();
+        }
+
+        return price;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), date, addressDetails, orderedItems);
+    public List<Priceable> getPriceableChildren() { return new ArrayList<>(orderedItems); }
+
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Customer customer;
+
+    private Date timePlaced;
+
+
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "date=" + date +
+                ", price=" + price +
+                ", priceValid=" + priceValid +
+                ", orderedItems=" + orderedItems +
+                ", customer=" + customer +
+                ", timePlaced=" + timePlaced +
+                '}';
     }
 }
 

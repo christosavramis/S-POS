@@ -9,24 +9,22 @@ import net.christosav.mpos.data.Category;
 import net.christosav.mpos.data.OrderableItem;
 
 import java.util.List;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
-
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.shared.Registration;
+import net.christosav.mpos.services.POSOrderingService;
 import net.christosav.mpos.views.util.ComponentEventWithPayload;
 
 public class OrderableItemPanelLayout extends VerticalLayout {
         private final Div orderableItemWrapper = new Div();
-        private transient final Function<Category, List<OrderableItem>> categoryOrderableItemsSupplier;
+        private final POSOrderingService posOrderingService;
 
-        public OrderableItemPanelLayout(Supplier<List<Category>> categoriesSupplier, Function<Category, List<OrderableItem>> categoryOrderableItemsSupplier) {
-            this.categoryOrderableItemsSupplier = categoryOrderableItemsSupplier;
-            List<Category> categories = categoriesSupplier.get();
+        public OrderableItemPanelLayout(POSOrderingService posOrderingService) {
+            this.posOrderingService = posOrderingService;
+
+            List<Category> categories = posOrderingService.getCategories();
             MenuBar menuBar = new MenuBar();
             categories.forEach(category -> menuBar.addItem(category.getName(), event -> fireEvent(new CategoryClicked(this, category))));
             add(menuBar);
@@ -46,7 +44,7 @@ public class OrderableItemPanelLayout extends VerticalLayout {
         private void setItemPanels(Category category) {
             if (category != null) {
                 orderableItemWrapper.removeAll();
-                orderableItemWrapper.add(categoryOrderableItemsSupplier.apply(category).stream().map(this::orderableItemToComponent).toList());
+                orderableItemWrapper.add(posOrderingService.getItemsByCategory(category).stream().map(this::orderableItemToComponent).toList());
             }
         }
 

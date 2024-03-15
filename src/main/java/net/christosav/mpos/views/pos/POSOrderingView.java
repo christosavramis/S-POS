@@ -16,20 +16,18 @@ import net.christosav.mpos.views.MainLayout;
 @AnonymousAllowed
 @Uses(Icon.class)
 public class POSOrderingView extends Composite<VerticalLayout> {
-    private final POSOrderingService posOrderingService;
 
     public POSOrderingView(POSOrderingService posOrderingService) {
-        this.posOrderingService = posOrderingService;
 
         getContent().setSizeFull();
 
         HorizontalLayout mainLayout = new HorizontalLayout();
         mainLayout.setSizeFull();
 
-        OrderableItemPanelLayout orderableItemPanelLayout = new OrderableItemPanelLayout(posOrderingService::getCategories, posOrderingService::getItemsByCategory);
+        OrderableItemPanelLayout orderableItemPanelLayout = new OrderableItemPanelLayout(posOrderingService);
+        OrderedItemPanelLayout orderedItemPanelLayout = new OrderedItemPanelLayout(posOrderingService);
 
-        OrderedItemPanelLayout orderedItemPanelLayout = new OrderedItemPanelLayout();
-        orderableItemPanelLayout.addListener(OrderableItemPanelLayout.OrderableItemClicked.class, event -> orderedItemPanelLayout.addOrderedItem(event.getPayload()));
+        orderableItemPanelLayout.addListener(OrderableItemPanelLayout.OrderableItemClicked.class, event -> orderedItemPanelLayout.orderItem(event.getPayload()));
 
         mainLayout.add(orderableItemPanelLayout, orderedItemPanelLayout);
         getContent().add(mainLayout);

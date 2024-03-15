@@ -2,6 +2,7 @@ package net.christosav.mpos.services;
 
 import lombok.RequiredArgsConstructor;
 import net.christosav.mpos.data.Category;
+import net.christosav.mpos.data.Order;
 import net.christosav.mpos.data.OrderableItem;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import java.util.List;
 public class POSOrderingService {
     private final OrderableItemCrudService orderableItemCrudService;
     private final CategoryCrudService categoryCrudService;
+    final OrderService orderService;
 
 
     public List<Category> getCategories() {
@@ -22,5 +24,8 @@ public class POSOrderingService {
         return orderableItemCrudService.findByCategory(category);
     }
 
+    public Order placeOrder(Order order) {
+        return orderService.placeOrder(order);
+    }
 
 }
