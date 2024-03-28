@@ -1,4 +1,4 @@
-package net.christosav.mpos.components.pricefield;
+package net.christosav.mpos.views.components.pricefield;
 
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.customfield.CustomField;

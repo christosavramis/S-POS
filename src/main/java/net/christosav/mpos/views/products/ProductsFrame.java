@@ -11,7 +11,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-import net.christosav.mpos.components.pricefield.PriceField;
+import net.christosav.mpos.views.components.pricefield.PriceField;
 
 import java.util.ArrayList;
 import java.util.List;

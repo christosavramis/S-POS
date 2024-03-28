@@ -6,66 +6,89 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
-
-import static java.util.function.Predicate.not;
 
 @Entity(name = "orders")
 @AllArgsConstructor @NoArgsConstructor
 @Setter @Getter
-public class Order extends AbstractEntity implements Priceable {
+public class Order extends AbstractEntity implements PricedEntity {
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status = OrderStatus.getDefault();
 
-    private Date date = new Date();
-
-    // Pricing
+    private Date timePlaced;
     private int price;
-
     private boolean priceValid;
-    public boolean isPriceValid() {
-        return priceValid && getPriceableChildren().stream().anyMatch(not(Priceable::isPriceValid));
-    }
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<OrderedItem> orderedItems = new ArrayList<>();
 
-    public void orderItem(OrderableItem orderableItem) {
-        OrderedItem orderedItem = new OrderedItem();
-        orderedItem.setName(orderableItem.getName());
-        orderedItem.setOrder(this);
-        orderedItem.setOrderableItem(orderableItem);
-        orderedItems.add(orderedItem);
-        modified();
-    }
-
-    @Override
-    public int getPrice() {
-        if (!isPriceValid()) {
-            calcPrice();
-        }
-
-        return price;
-    }
-
-    @Override
-    public List<Priceable> getPriceableChildren() { return new ArrayList<>(orderedItems); }
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Customer customer = new Customer();
 
 
     @ManyToOne(cascade = CascadeType.ALL)
-    private Customer customer;
+    private PaymentInfo paymentInfo = new PaymentInfo();
 
-    private Date timePlaced;
+    /**
+     * DO NOT USE THIS METHOD TO MANIPULATE THE ORDERED ITEMS.
+     * Instead, use orderItem() and removeItem() to manipulate the ordered items.
+     * @return the list of ordered items.
+     * @see Order#orderItem(OrderableItem)
+     * @see Order#removeItem(OrderedItem)
+     */
+    public List<OrderedItem> getOrderedItems() {
+        return orderedItems;
+    }
+
+    public void orderItem(OrderableItem orderableItem) {
+        orderedItems.add(new OrderedItem(orderableItem, this));
+        calcPrice();
+    }
+
+    public void removeItem(OrderedItem orderedItem) {
+        orderedItems.remove(orderedItem);
+        calcPrice();
+    }
 
 
 
-    @Override
+    public void calcPrice() {
+        price = 0;
+        for (OrderedItem orderedItem : orderedItems) {
+            price += orderedItem.getTotalPrice();
+        }
+        priceValid = true;
+    }
+
+
+
+    public void voidOrder() {
+        status = OrderStatus.VOIDED;
+    }
+
+    public void closeOrder() {
+        status = OrderStatus.CLOSED;
+    }
+
+
+    public void payOrder() {
+        status = OrderStatus.PAID;
+        paymentInfo.setTimePaid(new Date());
+        paymentInfo.setAmountPaid(price);
+    }
+
+    public void placeOrder() {
+        timePlaced = new Date();
+        status = OrderStatus.PLACED;
+    }
+
+
     public String toString() {
         return "Order{" +
-                "date=" + date +
+                "timePlaced=" + timePlaced +
                 ", price=" + price +
                 ", priceValid=" + priceValid +
                 ", orderedItems=" + orderedItems +
                 ", customer=" + customer +
-                ", timePlaced=" + timePlaced +
                 '}';
     }
 }

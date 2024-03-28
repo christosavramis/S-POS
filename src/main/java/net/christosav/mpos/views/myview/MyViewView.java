@@ -15,7 +15,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import java.util.ArrayList;
 import java.util.List;
-import net.christosav.mpos.components.pricefield.PriceField;
+import net.christosav.mpos.views.components.pricefield.PriceField;
 import net.christosav.mpos.views.MainLayout;
 
 @PageTitle("My View")

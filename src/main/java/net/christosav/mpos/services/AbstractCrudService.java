@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class AbstractCrudService<T, ID> {
@@ -25,4 +26,9 @@ public class AbstractCrudService<T, ID> {
     public T save(T entity) {
         return repository.save(entity);
     }
+
+    public Optional<T> findById(ID id) {
+        return repository.findById(id);
+    }
+
 }

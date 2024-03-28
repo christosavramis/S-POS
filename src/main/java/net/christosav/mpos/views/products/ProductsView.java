@@ -1,8 +1,6 @@
 package net.christosav.mpos.views.products;
 
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
-import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -28,11 +26,10 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
 import jakarta.annotation.security.RolesAllowed;
 import java.util.ArrayList;
 import java.util.List;
-import net.christosav.mpos.components.pricefield.PriceField;
+import net.christosav.mpos.views.components.pricefield.PriceField;
 import net.christosav.mpos.data.SamplePerson;
 import net.christosav.mpos.services.SamplePersonService;
 import net.christosav.mpos.views.MainLayout;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 
 @PageTitle("Products")

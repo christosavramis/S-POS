@@ -35,7 +35,8 @@ import net.christosav.mpos.views.gridwithfilters.GridwithFiltersView;
 import net.christosav.mpos.views.helloworld.HelloWorldView;
 import net.christosav.mpos.views.myview.MyViewView;
 import net.christosav.mpos.views.myview2.MyView2View;
-import net.christosav.mpos.views.pos.POSOrderingView;
+import net.christosav.mpos.views.pos.OrderEditorView;
+import net.christosav.mpos.views.pos.OrderHistoryView;
 import net.christosav.mpos.views.products.ProductsView;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
@@ -89,8 +90,12 @@ public class MainLayout extends AppLayout {
             nav.addItem(new SideNavItem("OrderableItem", OrderableItemView.class, LineAwesomeIcon.CALENDAR_TIMES.create()));
         }
 
-        if (accessChecker.hasAccess(POSOrderingView.class)) {
-            nav.addItem(new SideNavItem("Cart", POSOrderingView.class, LineAwesomeIcon.SHOPPING_CART_SOLID.create()));
+        if (accessChecker.hasAccess(OrderEditorView.class)) {
+            nav.addItem(new SideNavItem("New Order", OrderEditorView.class, LineAwesomeIcon.SHOPPING_CART_SOLID.create()));
+        }
+
+        if (accessChecker.hasAccess(OrderHistoryView.class)) {
+            nav.addItem(new SideNavItem("Order History", OrderHistoryView.class, LineAwesomeIcon.SHOPPING_CART_SOLID.create()));
         }
 
         if (accessChecker.hasAccess(CartView.class)) {

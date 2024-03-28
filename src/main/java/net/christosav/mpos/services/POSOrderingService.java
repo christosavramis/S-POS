@@ -13,7 +13,7 @@ import java.util.List;
 public class POSOrderingService {
     private final OrderableItemCrudService orderableItemCrudService;
     private final CategoryCrudService categoryCrudService;
-    final OrderService orderService;
+    private final OrderService orderService;
 
 
     public List<Category> getCategories() {

@@ -1,61 +1,67 @@
 package net.christosav.mpos.views.pos;
 
 import com.vaadin.flow.component.ComponentEvent;
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 
 import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.customfield.CustomField;
-import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H5;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.tabs.TabSheet;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.binder.ReadOnlyHasValue;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.shared.Registration;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import net.christosav.mpos.converters.PriceFormatter;
 import net.christosav.mpos.data.*;
-import net.christosav.mpos.services.POSOrderingService;
+import net.christosav.mpos.services.OrderService;
 import net.christosav.mpos.views.util.DialogUtil;
 
-import java.text.NumberFormat;
-import java.time.LocalDate;
+import java.awt.*;
+import java.util.List;
+
 
 public class OrderedItemPanelLayout extends VerticalLayout {
-    private final POSOrderingService posOrderingService;
+    private final OrderService orderService;
     private Order order;
-    private final Grid<OrderedItem> grid;
+    private final CustomerDetailsForm customerDetailsForm = new CustomerDetailsForm();
+    private final Binder<Order> orderBinder = new Binder<>(Order.class);
 
-    private NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance();
+    private final MenuItem clearButton;
+    private Button placeOrderButton;
 
-    private H5 totalLabel = new H5("Total: ");
+    public OrderedItemPanelLayout(OrderService orderService) {
+        this.orderService = orderService;
 
-
-    private final CustomerDetailsFormCF customerDetailsForm = new CustomerDetailsFormCF();
-
-    public OrderedItemPanelLayout(POSOrderingService posOrderingService) {
-        this.posOrderingService = posOrderingService;
 
         MenuBar menuBar = new MenuBar();
-        menuBar.addItem("Clear", event -> DialogUtil.createConfirmationDialog(
+        clearButton = menuBar.addItem("Clear", event -> DialogUtil.createConfirmationDialog(
                 "Clear order",
                 "Are you sure you want to clear the order?",
                 "Clear",
-                cancelEvent -> {
-                },
-                saveEvent -> setOrder(new Order())
+                cancelEvent -> {},
+                saveEvent -> {
+                    if (OrderStatus.UNDEFINED.equals(order.getStatus())) {
+                        setOrder(new Order());
+                    } else {
+                        setOrder(orderService.getOrderById(order.getId()).orElse(new Order()));
+                    }
+                }
         ));
-
         add(menuBar);
 
-        grid = new Grid<>(OrderedItem.class, false);
+        Grid<OrderedItem> grid = new Grid<>(OrderedItem.class, false);
         grid.addColumn(orderedItem -> orderedItem.getOrderableItem().getName()).setHeader("Name");
         grid.addComponentColumn(orderedItem -> {
             HorizontalLayout div = new HorizontalLayout();
@@ -64,6 +70,7 @@ public class OrderedItemPanelLayout extends VerticalLayout {
             Button decreaseButton = new Button("-", event -> changeQuantity(orderedItem, orderedItem.getQuantity() - 1));
             decreaseButton.getStyle().set("min-width", "unset");
             decreaseButton.getStyle().set("min-height", "unset");
+            decreaseButton.setEnabled(!OrderStatus.PAID.equals(order.getStatus()));
             div.add(decreaseButton);
 
             div.add(new Div(String.valueOf(orderedItem.getQuantity())));
@@ -71,15 +78,18 @@ public class OrderedItemPanelLayout extends VerticalLayout {
             Button increaseButton = new Button("+", event -> changeQuantity(orderedItem, orderedItem.getQuantity() + 1));
             increaseButton.getStyle().set("min-width", "unset");
             increaseButton.getStyle().set("min-height", "unset");
+            increaseButton.setEnabled(!OrderStatus.PAID.equals(order.getStatus()));
             div.add(increaseButton);
 
             return div;
         }).setHeader("Quantity");
-        grid.addColumn(orderedItem -> currencyFormatter.format(orderedItem.getPrice() / 1000f)).setHeader("Total");
+        grid.addColumn(orderedItem -> PriceFormatter.format(orderedItem.getTotalPrice())).setHeader("Total");
 
         grid.getStyle().setMaxHeight("500px");
         add(grid);
 
+        orderBinder.forField(new ReadOnlyHasValue<List<OrderedItem>>(grid::setItems))
+                   .bindReadOnly(Order::getOrderedItems);
 
         // add a payment section
         // just with cash for now
@@ -94,172 +104,108 @@ public class OrderedItemPanelLayout extends VerticalLayout {
         totalLayout.setWidthFull();
         totalLayout.getStyle().set("align-items", "flex-end");
         totalLayout.getStyle().set("justify-content", "flex-end");
-        totalLayout.add(totalLabel);
+
+        NativeLabel label = new NativeLabel();
+        orderBinder.forField(new ReadOnlyHasValue<>(label::setText)).bindReadOnly(order2 -> PriceFormatter.format(order2.getTotalPrice()));
+
+        totalLayout.add(new HorizontalLayout(new NativeLabel("Total: "), label));
 
         add(totalLayout);
 
         TabSheet tabSheet = new TabSheet();
         tabSheet.getStyle().set("height", "400px");
         tabSheet.getStyle().set("width", "100%");
-        tabSheet.add("Details", new VerticalLayout(customerDetailsForm, new Button("test", event -> System.out.println(customerDetailsForm.getValue()))));
-        tabSheet.add("Payment", new Div("Payment section"));
+
+        orderBinder.forField(customerDetailsForm).bind(Order::getCustomer, Order::setCustomer);
+
+        tabSheet.add("Details", customerDetailsForm);
         add(tabSheet);
 
 
-        Button placeOrderButton = new Button("Place order", event ->
-                DialogUtil.createConfirmationDialog(
-                "Place order",
-                "Are you sure you want to place the order?",
-                "Place order",
-                cancelEvent -> {
-                },
-                saveEvent -> placeOrder()
-        ));
-        add(placeOrderButton);
+        Select<PaymentType> paymentTypeSelect = new Select<>();
+        paymentTypeSelect.setRenderer(new ComponentRenderer<>(paymentType -> {
+            FlexLayout wrapper = new FlexLayout();
+            wrapper.setAlignItems(Alignment.CENTER);
 
+            Image image = new Image();
+            image.setSrc("images/icon/PaymentType_" + paymentType.name() + ".png");
+            image.setAlt("Payment type ");
+            image.setWidth("var(--lumo-size-m)");
+            image.getStyle().set("margin-right", "var(--lumo-space-s)");
 
+            Div info = new Div();
+            info.setText(paymentType.name());
+            wrapper.add(image, info);
+            return wrapper;
+        }));
+        paymentTypeSelect.setItems(PaymentType.values());
+        orderBinder.forField(paymentTypeSelect).bind(order1 -> order1.getPaymentInfo().getPaymentType(), (order1, paymentType) -> order1.getPaymentInfo().setPaymentType(paymentType));
+
+        placeOrderButton = new Button("Place order", event -> placeOrderStepConfirm());
+        placeOrderButton.setHeightFull();
+
+        HorizontalLayout orderFinalizationLayout = new HorizontalLayout(paymentTypeSelect, placeOrderButton);
+        orderFinalizationLayout.setJustifyContentMode(JustifyContentMode.CENTER);
+        orderFinalizationLayout.setAlignItems(Alignment.CENTER);
+
+        add(orderFinalizationLayout);
+    }
+
+    private void afterOrderActionStep(Order order) {
         setOrder(new Order());
     }
 
-    private void placeOrder() {
-        System.out.println("Placing order...");
-        order.setCustomer(customerDetailsForm.getValue());
-        long orderId = posOrderingService.placeOrder(order).getId();
-        System.out.println("Order placed with id: " + orderId + order);
+    private void placeOrderStepFinal() {
+        orderService.placeOrder(order);
+        Notification.show("Order placed successfully").addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        afterOrderActionStep(order);
+    }
 
-        setOrder(new Order());
+    private void placeOrderAndPayStepFinal() {
+        orderService.placeAndPayOrder(order);
+        Notification.show("Order placed successfully").addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        afterOrderActionStep(order);
+    }
+
+    private void placeOrderStepConfirm() {
+        ConfirmDialog dialog = new ConfirmDialog();
+        dialog.setHeader("Placing order");
+        dialog.setText("will this order be paid now" + order.getPaymentInfo().getPaymentType() + " ?");
+
+        dialog.setCancelable(true);
+        dialog.setCancelText("no");
+        dialog.addCancelListener(cancelEvent -> this.placeOrderStepFinal());
+
+        dialog.setConfirmText("yes");
+        dialog.addConfirmListener(e -> this.placeOrderAndPayStepFinal());
+        dialog.open();
     }
 
 
-    private void setOrder(Order order) {
+    public void setOrder(Order order) {
         this.order = order;
-        customerDetailsForm.setValue(order.getCustomer());
-        grid.setDataProvider(new ListDataProvider<>(order.getOrderedItems()));
-        refreshTotal();
+        orderBinder.setBean(order);
+
+        if (OrderStatus.UNDEFINED.equals(order.getStatus())) {
+            clearButton.setEnabled(false);
+        }
+
     }
 
     public void orderItem(OrderableItem orderableItem) {
         order.orderItem(orderableItem);
-        refreshGrid();
-        refreshTotal();
+        orderBinder.readBean(order);
     }
 
     public void changeQuantity(OrderedItem orderedItem, int quantity) {
         orderedItem.setQuantity(quantity);
-        refreshGrid();
-        refreshTotal();
+        orderBinder.readBean(order);
     }
 
-    private void refreshGrid() {
-        grid.getDataProvider().refreshAll();
-    }
-
-    private void refreshTotal() {
-        totalLabel.setText("Total: " + currencyFormatter.format(order.getPrice() / 1000f));
-    }
     @Override
     public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType, ComponentEventListener<T> listener) {
         return getEventBus().addListener(eventType, listener);
     }
 
-
-    class CustomerDetailsFormCF extends CustomField<Customer> {
-        private final Binder<Customer> binder = new Binder<>(Customer.class);
-        public CustomerDetailsFormCF() {
-            TextField number = new TextField("Number");
-            number.setWidth("5em");
-
-            TextField name = new TextField("Name");
-            binder.bind(name, Customer::getName, Customer::setName);
-            TextField phone = new TextField("Phone");
-            binder.bind(phone, Customer::getPhone, Customer::setPhone);
-
-            AddressDetailsField addressDetailsField = new AddressDetailsField();
-            binder.bind(addressDetailsField, Customer::getAddressDetails, Customer::setAddressDetails);
-
-            binder.setBean(new Customer());
-            add(name, phone);
-        }
-
-        class AddressDetailsField extends CustomField<AddressDetails>  {
-            private final Binder<AddressDetails> binder = new Binder<>(AddressDetails.class);
-
-            public AddressDetailsField() {
-                TextField road = new TextField("Road");
-                binder.bind(road, AddressDetails::getRoad, AddressDetails::setRoad);
-                TextField number = new TextField("Number");
-                binder.bind(number, AddressDetails::getNumber, AddressDetails::setNumber);
-                TextField city = new TextField("City");
-                binder.bind(city, AddressDetails::getCity, AddressDetails::setCity);
-                binder.setBean(new AddressDetails());
-                add(road, number, city);
-            }
-
-            @Override
-            protected AddressDetails generateModelValue() {
-                return binder.getBean();
-            }
-
-            @Override
-            protected void setPresentationValue(AddressDetails addressDetails) {
-                binder.setBean(addressDetails);
-            }
-        }
-
-        @Override
-        protected Customer generateModelValue() {
-            return binder.getBean();
-        }
-
-        @Override
-        protected void setPresentationValue(Customer customer) {
-            binder.setBean(customer);
-        }
-    }
-
-    public class DateRangePicker extends CustomField<DateRangePicker.LocalDateRange> {
-
-        private DatePicker start;
-        private DatePicker end;
-
-        public DateRangePicker(String label) {
-            this();
-            setLabel(label);
-        }
-
-        public DateRangePicker() {
-            start = new DatePicker();
-            start.setPlaceholder("Start date");
-            // Sets title for screen readers
-            start.getElement().executeJs(
-                    "this.focusElement.setAttribute('title', 'Start date')");
-
-            end = new DatePicker();
-            end.setPlaceholder("End date");
-            end.getElement().executeJs(
-                    "this.focusElement.setAttribute('title', 'End date')");
-
-            add(start, new Text(" – "), end);
-        }
-
-        @Override
-        protected LocalDateRange generateModelValue() {
-            return new LocalDateRange(start.getValue(), end.getValue());
-        }
-
-        @Override
-        protected void setPresentationValue(LocalDateRange dateRange) {
-            start.setValue(dateRange.getStartDate());
-            end.setValue(dateRange.getEndDate());
-        }
-
-
-        @Data @AllArgsConstructor @NoArgsConstructor
-        public static class LocalDateRange {
-
-            private LocalDate startDate;
-            private LocalDate endDate;
-        }
-    }
 
 }

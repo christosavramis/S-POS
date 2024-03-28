@@ -18,7 +18,7 @@ import java.util.Objects;
 public class OrderableItem extends AbstractEntity {
     private String name;
     private String description;
-    private double price;
+    private int price;
     private boolean active;
 
     @ManyToOne

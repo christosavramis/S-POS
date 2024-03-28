@@ -174,3 +174,23 @@ insert into orderable_item(version, id, name, description, price, category_id, a
 insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 54, 'Garlic Bread', 'Toasted bread with garlic butter', 6500, 105, true);
 
 
+
+
+insert into ADDRESS_DETAILS (id, VERSION, city, NUMBER, ROAD) values (1, 0, 'city', 'country', 'postal_code');
+insert into CUSTOMER (id, VERSION, NAME, PHONE, ADDRESS_DETAILS_ID) values (1, 0, 'John Doe', '123456789', 1);
+insert into ORDERS (id, VERSION, price, price_valid, customer_id, time_placed, status) values (1002, 0, 39500, true, 1, '2024-03-25 21:56:59.239', 'PLACED');
+insert into ORDERED_ITEM (id, VERSION, ORDER_ID, ORDERABLE_ITEM_ID, NAME, QUANTITY, PRICE, PRICE_VALID) values (1001, 0, 1002, 25, 'BBQ Chicken Pizza', 1, 12500, true);
+insert into ORDERED_ITEM (id, VERSION, ORDER_ID, ORDERABLE_ITEM_ID, NAME, QUANTITY, PRICE, PRICE_VALID) values (1002, 0, 1002, 26, 'Buffalo Chicken Pizza', 1, 13000, true);
+insert into ORDERED_ITEM (id, VERSION, ORDER_ID, ORDERABLE_ITEM_ID, NAME, QUANTITY, PRICE, PRICE_VALID) values (1003, 0, 1002, 27, 'Mushroom Truffle Pizza', 1, 14000, true);
+insert into ORDERS_ORDERED_ITEMS (ORDERS_ID, ordered_items_id) values (1002, 1001);
+insert into ORDERS_ORDERED_ITEMS (ORDERS_ID, ordered_items_id) values (1002, 1002);
+insert into ORDERS_ORDERED_ITEMS (ORDERS_ID, ordered_items_id) values (1002, 1003);
+
+insert into ADDRESS_DETAILS (id, VERSION, city, NUMBER, ROAD) values (2, 0, 'city', 'country', 'postal_code');
+insert into CUSTOMER (id, VERSION, NAME, PHONE, ADDRESS_DETAILS_ID) values (2, 0, 'John Doe', '123456789', 2);
+insert into ORDERS (id, VERSION, price, price_valid, customer_id, time_placed, status) values (1003, 0, 31000, true, 2, '2024-03-25 21:56:59.239', 'PAID');
+insert into ORDERED_ITEM (id, VERSION, ORDER_ID, ORDERABLE_ITEM_ID, NAME, QUANTITY, PRICE, PRICE_VALID) values (1004, 0, 1003, 48, 'Tiramisu', 1, 8000, true);
+insert into ORDERED_ITEM (id, VERSION, ORDER_ID, ORDERABLE_ITEM_ID, NAME, QUANTITY, PRICE, PRICE_VALID) values (1005, 0, 1003, 26, 'Buffalo Chicken Pizza', 1, 13000, true);
+insert into ORDERED_ITEM (id, VERSION, ORDER_ID, ORDERABLE_ITEM_ID, NAME, QUANTITY, PRICE, PRICE_VALID) values (1006, 0, 1003, 52, 'Fruit Tart', 1, 10000, true);
+insert into ORDERS_ORDERED_ITEMS (ORDERS_ID, ordered_items_id) values (1003, 1004);
+insert into ORDERS_ORDERED_ITEMS (ORDERS_ID, ordered_items_id) values (1003, 1005);

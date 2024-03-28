@@ -6,27 +6,29 @@ import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.dom.Style;
 import net.christosav.mpos.data.Category;
+import net.christosav.mpos.data.Order;
+import net.christosav.mpos.data.OrderStatus;
 import net.christosav.mpos.data.OrderableItem;
 
 import java.util.List;
-import com.vaadin.flow.component.ComponentEvent;
-import com.vaadin.flow.component.ComponentEventListener;
+import java.util.function.Consumer;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.menubar.MenuBar;
-import com.vaadin.flow.shared.Registration;
-import net.christosav.mpos.services.POSOrderingService;
-import net.christosav.mpos.views.util.ComponentEventWithPayload;
+import net.christosav.mpos.services.OrderService;
 
 public class OrderableItemPanelLayout extends VerticalLayout {
         private final Div orderableItemWrapper = new Div();
-        private final POSOrderingService posOrderingService;
+        private final OrderService orderService;
+        private final Consumer<OrderableItem> orderableItemConsumer;
 
-        public OrderableItemPanelLayout(POSOrderingService posOrderingService) {
-            this.posOrderingService = posOrderingService;
+        public OrderableItemPanelLayout(OrderService orderService, Consumer<OrderableItem> orderableItemConsumer) {
+            this.orderService = orderService;
+            this.orderableItemConsumer = orderableItemConsumer;
 
-            List<Category> categories = posOrderingService.getCategories();
+            List<Category> categories = orderService.getCategories();
             MenuBar menuBar = new MenuBar();
-            categories.forEach(category -> menuBar.addItem(category.getName(), event -> fireEvent(new CategoryClicked(this, category))));
+            categories.forEach(category -> menuBar.addItem(category.getName(), event -> setItemPanels(category)));
             add(menuBar);
 
             orderableItemWrapper.getStyle().setDisplay(Style.Display.FLEX);
@@ -35,21 +37,18 @@ public class OrderableItemPanelLayout extends VerticalLayout {
             orderableItemWrapper.setMaxHeight("100%");
             setItemPanels(categories.stream().findFirst().orElse(null));
 
-            addListener(CategoryClicked.class, event -> setItemPanels(event.getPayload()));
-
-
             add(new Scroller(orderableItemWrapper));
         }
 
         private void setItemPanels(Category category) {
             if (category != null) {
                 orderableItemWrapper.removeAll();
-                orderableItemWrapper.add(posOrderingService.getItemsByCategory(category).stream().map(this::orderableItemToComponent).toList());
+                orderableItemWrapper.add(orderService.getItemsByCategory(category).stream().map(this::orderableItemToComponent).toList());
             }
         }
 
         private Component orderableItemToComponent(OrderableItem orderableItem) {
-            Button card = new Button(orderableItem.getName(), event -> fireEvent(new OrderableItemClicked(this, orderableItem)));
+            Button card = new Button(orderableItem.getName(), event -> orderableItemConsumer.accept(orderableItem));
             card.setWidth("150px");
             card.setHeight("150px");
 //            card.getStyle().setBackground("url('https://picsum.photos/150/150')");
@@ -64,21 +63,7 @@ public class OrderableItemPanelLayout extends VerticalLayout {
             return card;
         }
 
-        @Override
-        public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType, ComponentEventListener<T> listener) {
-            return getEventBus().addListener(eventType, listener);
-        }
-
-        private class CategoryClicked extends ComponentEventWithPayload<OrderableItemPanelLayout, Category> {
-            private CategoryClicked(OrderableItemPanelLayout source, Category category) {
-                super(source, category);
-            }
-        }
-
-        public class OrderableItemClicked extends ComponentEventWithPayload<OrderableItemPanelLayout, OrderableItem> {
-            public OrderableItemClicked(OrderableItemPanelLayout source, OrderableItem payload) {
-                super(source, payload);
-            }
-        }
-
+    public void setOrder(Order order) {
+        setEnabled(!OrderStatus.PAID.equals(order.getStatus()));
     }
+}
