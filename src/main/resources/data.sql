@@ -105,12 +105,20 @@ insert into user_roles (user_id, roles) values ('2', 'USER');
 insert into user_roles (user_id, roles) values ('2', 'ADMIN');
 
 
-insert into category(version, id, name, active) values (1, 100, 'Pizza', true);
-insert into category(version, id, name, active) values (1, 101, 'Drinks', true);
-insert into category(version, id, name, active) values (1, 104, 'Pasta', true);
-insert into category(version, id, name, active) values (1, 102, 'Salad', true);
-insert into category(version, id, name, active) values (1, 103, 'Dessert', true);
-insert into category(version, id, name, active) values (1, 105, 'Appetizer', true);
+
+insert into IMAGE_ENTITY (id, VERSION, name, type, url) values (1, 0, 'pizza', 'PNG', './images/generic/pizza.png');
+insert into IMAGE_ENTITY (id, VERSION, name, type, url) values (2, 0, 'drink', 'PNG', './images/generic/drink.png');
+insert into IMAGE_ENTITY (id, VERSION, name, type, url) values (3, 0, 'pasta', 'PNG', './images/generic/pasta.png');
+insert into IMAGE_ENTITY (id, VERSION, name, type, url) values (4, 0, 'salad', 'PNG', './images/generic/salad.png');
+insert into IMAGE_ENTITY (id, VERSION, name, type, url) values (5, 0, 'dessert', 'PNG', './images/generic/dessert.png');
+insert into IMAGE_ENTITY (id, VERSION, name, type, url) values (6, 0, 'appetizer', 'PNG', './images/generic/appetizer.png');
+
+insert into category(version, id, name, active, image_id) values (1, 100, 'Pizza', true, 1);
+insert into category(version, id, name, active, image_id) values (1, 101, 'Drinks', true, 2);
+insert into category(version, id, name, active, image_id) values (1, 104, 'Pasta', true, 3);
+insert into category(version, id, name, active, image_id) values (1, 102, 'Salad', true, 4);
+insert into category(version, id, name, active, image_id) values (1, 103, 'Dessert', true, 5);
+insert into category(version, id, name, active, image_id) values (1, 105, 'Appetizer', true, 6);
 
 insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 1, 'Margherita', 'Tomato, mozzarella, basil', 10000, 104, true);
 insert into orderable_item(version, id, name, description, price, category_id, active) values (1, 2, 'Marinara', 'Tomato, garlic, oregano', 10000, 104, true);

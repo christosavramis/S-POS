@@ -20,4 +20,9 @@ public class Customer extends AbstractEntity {
     @ManyToOne(cascade = CascadeType.ALL)
     private AddressDetails addressDetails = new AddressDetails();
 
+    @Nullable
+    public AddressDetails getAddressDetails() {
+        return addressDetails;
+    }
+
 }

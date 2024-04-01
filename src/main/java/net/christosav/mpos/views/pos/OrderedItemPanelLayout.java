@@ -4,7 +4,6 @@ import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.button.Button;
 
 import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.grid.Grid;
@@ -28,18 +27,16 @@ import net.christosav.mpos.data.*;
 import net.christosav.mpos.services.OrderService;
 import net.christosav.mpos.views.util.DialogUtil;
 
-import java.awt.*;
 import java.util.List;
+import java.util.Optional;
 
 
 public class OrderedItemPanelLayout extends VerticalLayout {
     private final OrderService orderService;
     private Order order;
-    private final CustomerDetailsForm customerDetailsForm = new CustomerDetailsForm();
     private final Binder<Order> orderBinder = new Binder<>(Order.class);
 
     private final MenuItem clearButton;
-    private Button placeOrderButton;
 
     public OrderedItemPanelLayout(OrderService orderService) {
         this.orderService = orderService;
@@ -62,6 +59,13 @@ public class OrderedItemPanelLayout extends VerticalLayout {
         add(menuBar);
 
         Grid<OrderedItem> grid = new Grid<>(OrderedItem.class, false);
+        grid.addComponentColumn(orderedItem -> {
+            Image image = new Image();
+            image.setSrc(Optional.ofNullable(orderedItem.getOrderableItem().getImage()).map(ImageEntity::getUrl).orElse("images/icon/NoImage.png"));
+            image.setWidth("50px");
+            image.setHeight("50px");
+            return image;
+        }).setHeader("Image");
         grid.addColumn(orderedItem -> orderedItem.getOrderableItem().getName()).setHeader("Name");
         grid.addComponentColumn(orderedItem -> {
             HorizontalLayout div = new HorizontalLayout();
@@ -116,6 +120,7 @@ public class OrderedItemPanelLayout extends VerticalLayout {
         tabSheet.getStyle().set("height", "400px");
         tabSheet.getStyle().set("width", "100%");
 
+        CustomerDetailsForm customerDetailsForm = new CustomerDetailsForm();
         orderBinder.forField(customerDetailsForm).bind(Order::getCustomer, Order::setCustomer);
 
         tabSheet.add("Details", customerDetailsForm);
@@ -141,7 +146,7 @@ public class OrderedItemPanelLayout extends VerticalLayout {
         paymentTypeSelect.setItems(PaymentType.values());
         orderBinder.forField(paymentTypeSelect).bind(order1 -> order1.getPaymentInfo().getPaymentType(), (order1, paymentType) -> order1.getPaymentInfo().setPaymentType(paymentType));
 
-        placeOrderButton = new Button("Place order", event -> placeOrderStepConfirm());
+        Button placeOrderButton = new Button("Place order", event -> placeOrderStepConfirm());
         placeOrderButton.setHeightFull();
 
         HorizontalLayout orderFinalizationLayout = new HorizontalLayout(paymentTypeSelect, placeOrderButton);
@@ -151,20 +156,20 @@ public class OrderedItemPanelLayout extends VerticalLayout {
         add(orderFinalizationLayout);
     }
 
-    private void afterOrderActionStep(Order order) {
+    private void afterOrderActionStep() {
         setOrder(new Order());
     }
 
     private void placeOrderStepFinal() {
         orderService.placeOrder(order);
         Notification.show("Order placed successfully").addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-        afterOrderActionStep(order);
+        afterOrderActionStep();
     }
 
     private void placeOrderAndPayStepFinal() {
         orderService.placeAndPayOrder(order);
         Notification.show("Order placed successfully").addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-        afterOrderActionStep(order);
+        afterOrderActionStep();
     }
 
     private void placeOrderStepConfirm() {

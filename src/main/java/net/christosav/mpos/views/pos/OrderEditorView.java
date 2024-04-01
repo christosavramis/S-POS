@@ -16,7 +16,7 @@ import net.christosav.mpos.views.MainLayout;
 @Route(value = "pos/order/editor/:orderId?", layout = MainLayout.class)
 @AnonymousAllowed
 @Uses(Icon.class)
-public class OrderEditorView extends Composite<VerticalLayout> implements BeforeEnterObserver, AfterNavigationObserver {
+public class OrderEditorView extends Composite<VerticalLayout> implements BeforeEnterObserver {
     private final OrderService orderService;
     private final OrderedItemPanelLayout orderedItemPanelLayout;
     private final OrderableItemPanelLayout orderableItemPanelLayout;
@@ -36,20 +36,16 @@ public class OrderEditorView extends Composite<VerticalLayout> implements Before
         getContent().add(mainLayout);
     }
 
-    private void setOrderWithMode(Order order) {
+    private void setOrder(Order order) {
         orderedItemPanelLayout.setOrder(order);
         orderableItemPanelLayout.setOrder(order);
     }
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        setOrderWithMode(event.getRouteParameters().get("orderId")
+        setOrder(event.getRouteParameters().get("orderId")
                 .flatMap(orderId -> orderService.getOrderById(Long.parseLong(orderId)))
                 .orElse(new Order()));
     }
 
-    @Override
-    public void afterNavigation(AfterNavigationEvent event) {
-
-    }
 }

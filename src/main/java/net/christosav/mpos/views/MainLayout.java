@@ -29,6 +29,7 @@ import net.christosav.mpos.views.about.AboutView;
 import net.christosav.mpos.views.cart.CartView;
 import net.christosav.mpos.views.catalog.CatalogView;
 import net.christosav.mpos.views.catalog.categories.CategoryView;
+import net.christosav.mpos.views.catalog.imageEntities.ImageView;
 import net.christosav.mpos.views.catalog.orderableitems.OrderableItemView;
 import net.christosav.mpos.views.checkoutform.CheckoutFormView;
 import net.christosav.mpos.views.gridwithfilters.GridwithFiltersView;
@@ -81,6 +82,10 @@ public class MainLayout extends AppLayout {
 
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
+
+        if (accessChecker.hasAccess(ImageView.class)) {
+            nav.addItem(new SideNavItem("Images", ImageView.class, LineAwesomeIcon.CALENDAR_TIMES.create()));
+        }
 
         if (accessChecker.hasAccess(CategoryView.class)) {
             nav.addItem(new SideNavItem("Categories", CategoryView.class, LineAwesomeIcon.CALENDAR_TIMES.create()));

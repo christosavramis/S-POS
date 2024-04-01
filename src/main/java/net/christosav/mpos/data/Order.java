@@ -1,5 +1,6 @@
 package net.christosav.mpos.data;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,9 +24,13 @@ public class Order extends AbstractEntity implements PricedEntity {
 
     @ManyToOne(cascade = CascadeType.ALL)
     private Customer customer = new Customer();
+    @Nullable
+    public Customer getCustomer() {
+        return customer;
+    }
 
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL) // change it to a list of payments
     private PaymentInfo paymentInfo = new PaymentInfo();
 
     /**

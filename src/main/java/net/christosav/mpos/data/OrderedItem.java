@@ -1,6 +1,7 @@
 package net.christosav.mpos.data;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +16,7 @@ public class OrderedItem extends AbstractEntity implements PricedEntity {
     private Order order;
 
     @ManyToOne
+    @JoinColumn(name = "orderable_item_id")
     private OrderableItem orderableItem;
 
     private String name;
